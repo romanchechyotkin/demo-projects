@@ -1,0 +1,11 @@
+http:
+  port: "8080"
+  bind: "0.0.0.0"
+api:
+  age_url: "https://api.agify.io"
+  gender_url: "https://api.genderize.io"
+  nationality_url: "https://api.nationalize.io"
+db:
+  url: "postgres://romanchechetkin:5432@localhost:5432/effective?sslmode=disable"
+  connect_time_out: 5
+  auto_create: true

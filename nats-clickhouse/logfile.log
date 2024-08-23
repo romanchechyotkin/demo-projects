@@ -1,0 +1,29 @@
+{"time":"2024-03-09T16:21:10.9737468+03:00","level":"INFO","msg":"clickhouse current database:","!BADKEY":"default"}
+{"time":"2024-03-09T16:21:10.9967567+03:00","level":"ERROR","msg":"Code: 82, Message: Database nats already exists"}
+{"time":"2024-03-09T16:21:11.0941076+03:00","level":"ERROR","msg":"Code: 57, Message: Table nats.logs_view already exists"}
+{"time":"2024-03-09T16:21:11.0962957+03:00","level":"INFO","msg":"running server","port":8080}
+{"time":"2024-03-09T16:21:16.8648611+03:00","level":"INFO","msg":"got request","uri":"/click","method":"GET"}
+{"time":"2024-03-09T16:21:17.35912+03:00","level":"INFO","msg":"got request","uri":"/click","method":"GET"}
+{"time":"2024-03-09T16:21:17.837+03:00","level":"INFO","msg":"got request","uri":"/click","method":"GET"}
+{"time":"2024-03-09T16:21:21.1006292+03:00","level":"INFO","msg":"logs","length":3}
+{"time":"2024-03-09T16:21:31.1112951+03:00","level":"INFO","msg":"logs","length":0}
+{"time":"2024-03-09T16:21:41.1105111+03:00","level":"INFO","msg":"logs","length":0}
+{"time":"2024-03-09T16:21:51.1107786+03:00","level":"INFO","msg":"logs","length":0}
+{"time":"2024-03-09T16:30:06.9922791+03:00","level":"INFO","msg":"clickhouse current database:","!BADKEY":"default"}
+{"time":"2024-03-09T16:30:07.0161126+03:00","level":"ERROR","msg":"Code: 82, Message: Database nats already exists"}
+{"time":"2024-03-09T16:30:07.1127951+03:00","level":"ERROR","msg":"Code: 57, Message: Table nats.logs_view already exists"}
+{"time":"2024-03-09T16:30:07.1149321+03:00","level":"INFO","msg":"running server","port":8080}
+{"time":"2024-03-09T16:30:14.1013575+03:00","level":"INFO","msg":"got request","uri":"/click","method":"GET"}
+{"time":"2024-03-09T16:30:14.6480182+03:00","level":"INFO","msg":"got request","uri":"/click","method":"GET"}
+{"time":"2024-03-09T16:30:15.1858449+03:00","level":"INFO","msg":"got request","uri":"/click","method":"GET"}
+{"time":"2024-03-09T16:30:15.6941444+03:00","level":"INFO","msg":"got request","uri":"/click","method":"GET"}
+{"time":"2024-03-09T16:33:56.1596743+03:00","level":"INFO","msg":"clickhouse current database:","!BADKEY":"default"}
+{"time":"2024-03-09T16:33:56.1846057+03:00","level":"ERROR","msg":"Code: 82, Message: Database nats already exists"}
+{"time":"2024-03-09T16:33:56.2798342+03:00","level":"ERROR","msg":"Code: 57, Message: Table nats.logs_view already exists"}
+{"time":"2024-03-09T16:33:56.2820308+03:00","level":"INFO","msg":"running server","port":8080}
+{"time":"2024-03-09T16:34:04.937999+03:00","level":"INFO","msg":"got request","uri":"/click","method":"GET"}
+{"time":"2024-03-09T16:34:05.5880165+03:00","level":"INFO","msg":"got request","uri":"/click","method":"GET"}
+{"time":"2024-03-09T16:34:53.3794909+03:00","level":"INFO","msg":"clickhouse current database:","!BADKEY":"default"}
+{"time":"2024-03-09T16:34:53.404128+03:00","level":"ERROR","msg":"Code: 82, Message: Database nats already exists"}
+{"time":"2024-03-09T16:34:53.4992694+03:00","level":"ERROR","msg":"Code: 57, Message: Table nats.logs_view already exists"}
+{"time":"2024-03-09T16:34:53.5013932+03:00","level":"INFO","msg":"running server","port":8080}

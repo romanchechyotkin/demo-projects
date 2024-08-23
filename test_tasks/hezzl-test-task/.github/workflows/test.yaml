@@ -1,0 +1,43 @@
+name: test
+
+on: [push]
+
+jobs:
+  testing:
+    name: testing
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 5432
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.21'
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Run tests
+        env:
+          DB_USER: postgres
+          DB_PASSWORD: 5432
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_DATABASE: postgres
+        run: |
+          go test -v ./...

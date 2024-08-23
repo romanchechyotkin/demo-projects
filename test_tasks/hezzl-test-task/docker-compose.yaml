@@ -1,0 +1,48 @@
+version: '3.7'
+
+services:
+  nats:
+    image: nats:latest
+    container_name: nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+
+  postgres:
+    container_name: postgres
+    hostname: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 5432
+      POSTGRES_DB: hezzl
+    volumes:
+      - ./app_pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:6.2-alpine
+    hostname: redis
+    container_name: redis
+    command:
+      - 'redis-server'
+      - '--requirepass 6379'
+    volumes:
+      - ./app_redis_data:/data
+    ports:
+      - 6379:6379
+
+  clickhouse-server:
+    image: clickhouse/clickhouse-server
+    hostname: clickhouse
+    container_name: clickhouse
+    environment:
+      CLICKHOUSE_USER: clickhouse
+      CLICKHOUSE_PASSWORD: 8123
+    volumes:
+      - ./app_clickhouse_data:/var/lib/clickhouse
+    ports:
+      - "8123:8123"
+    depends_on:
+      - nats
