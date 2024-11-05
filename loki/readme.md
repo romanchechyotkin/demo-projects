@@ -1,6 +1,6 @@
 # test Grafana Loki project
 
 ## TODO
-- [ ] write some microservices (a few servers which communicate)
+- [X] write some microservices (a few servers which communicate)
 - [ ] put alloy agent for scraping
-- [ ] deploy loki, grafana
+- [X] deploy loki, grafana
