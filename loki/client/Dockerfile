@@ -1,5 +1,7 @@
 FROM golang:1.23-alpine
 
+RUN apk add curl 
+
 COPY go.mod client/main.go /app/
 
 WORKDIR /app

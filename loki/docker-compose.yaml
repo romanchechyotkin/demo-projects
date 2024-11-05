@@ -82,6 +82,8 @@ services:
       - "8000"
     networks:
       - loki-logs
+    links: 
+      - fluentd
     <<: *logging
 
   client:
@@ -99,7 +101,9 @@ services:
     depends_on:
       server:
         condition: service_started
-    <<: *logging
+    links: 
+      - fluentd
+    # <<: *logging
 
 networks:
   loki-logs:
