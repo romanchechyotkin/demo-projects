@@ -1,42 +1,42 @@
 x-logging: &logging
-  logging: 
-    driver: "fluentd"
+  logging:
+    driver: loki
     options:
-      tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
-      fluentd-address: "fluentd:24224"
-
+      loki-url: "http://loki:3100/loki/api/v1/push"
+      loki-pipeline-stages: |
+        - labels:
+            job: "{{.Name}}"
 services:
 
-  fluentd:
-    build:
-      context: ./fluentd
-      dockerfile: Dockerfile
-    container_name: fluentd
-    ports:
-      - "9292:9292"
-      - "24220:24220"
-      - "24224:24224"  # Fluentd in/out port
-      - "24224:24224/udp"
-    volumes:
-      - ./fluentd/fluentd.conf:/fluentd/etc/fluentd.conf
-    restart: always
-    environment:
-      - FLUENTD_CONF=fluentd.conf
-    networks:
-      - loki-logs
+  # fluentd:
+  #   build:
+  #     context: ./fluentd
+  #     dockerfile: Dockerfile
+  #   container_name: fluentd
+  #   ports:
+  #     - "9292:9292"
+  #     - "24220:24220"
+  #     - "24224:24224"  # Fluentd in/out port
+  #     - "24224:24224/udp"
+  #   volumes:
+  #     - ./fluentd/fluentd.conf:/fluentd/etc/fluentd.conf
+  #   restart: always
+  #   environment:
+  #     - FLUENTD_CONF=fluentd.conf
+  #   networks:
+  #     - loki-logs
    
   loki:
     image: grafana/loki:3.0.0
+    container_name: loki
     ports:
       - "3100:3100"
     volumes:
       - ./loki-data:/etc/loki
     command: ["--config.file=/etc/loki/config.yaml"]
-    depends_on:
-      - fluentd
     networks:
-      - loki-logs
-
+      - loki_logs
+      
   grafana:
     image: grafana/grafana-enterprise
     ports:
@@ -69,9 +69,10 @@ services:
         /run.sh
     depends_on:
       - loki
+    <<: *logging
     networks:
-      - loki-logs
- 
+      - loki_logs
+
   server:
     build:
       context: .
@@ -81,10 +82,7 @@ services:
     ports:
       - "8000"
     networks:
-      - loki-logs
-    links: 
-      - fluentd
-    <<: *logging
+      - loki_logs
 
   client:
     build:
@@ -96,14 +94,11 @@ services:
     restart: always
     ports:
       - "8001:8001"
-    networks:
-      - loki-logs
     depends_on:
       server:
         condition: service_started
-    links: 
-      - fluentd
-    # <<: *logging
+    networks:
+      - loki_logs
 
 networks:
-  loki-logs:
+  loki_logs:
