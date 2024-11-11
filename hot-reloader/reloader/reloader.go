@@ -14,19 +14,26 @@ type Reloadable interface {
 	Reload(cfg any)
 }
 
+type ReloaderConfig struct {
+	ConfigPath string
+	Timeout    time.Duration
+}
+
 type Reloader struct {
 	name       string
 	configPath string
-	config     any
+	timeout    time.Duration
 
+	config      any
 	reloadables []Reloadable
 	done        chan struct{}
 }
 
-func New(name, configPath string) *Reloader {
+func New(name string, cfg *ReloaderConfig) *Reloader {
 	r := &Reloader{
 		name:        name,
-		configPath:  configPath,
+		configPath:  cfg.ConfigPath,
+		timeout:     cfg.Timeout,
 		reloadables: make([]Reloadable, 0),
 		done:        make(chan struct{}),
 	}
@@ -62,11 +69,12 @@ func (r *Reloader) readConfig() {
 		return
 	}
 
+	log.Printf("current config %v+ %s\n", cfg, r.name)
 	r.config = &cfg
 }
 
 func (r *Reloader) run() {
-	ticker := time.NewTicker(time.Second)
+	ticker := time.NewTicker(r.timeout)
 
 	for {
 		select {
@@ -74,7 +82,7 @@ func (r *Reloader) run() {
 			log.Printf("%s reloder stopped\n", r.name)
 			return
 		case <-ticker.C:
-			log.Println("reloader started")
+			log.Printf("%s reloader started\n", r.name)
 
 			r.readConfig()
 

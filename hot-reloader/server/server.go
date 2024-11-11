@@ -6,18 +6,20 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"sync"
 
+	"hot_reloader/api"
 	"hot_reloader/config"
 )
 
 type Server struct {
 	httpsrv *http.Server
-	mu      sync.Mutex
+	api     *api.Api
 }
 
-func New(address string) *Server {
-	srv := &Server{}
+func New(address string, a *api.Api) *Server {
+	srv := &Server{
+		api: a,
+	}
 
 	srv.registerRoutes()
 
@@ -30,8 +32,9 @@ func New(address string) *Server {
 
 func (s *Server) registerRoutes() {
 	http.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
+		code := s.api.MakeRequest()
 		log.Println("got request", "method", r.Method, "url", r.URL)
-		fmt.Fprintln(w, "ok")
+		fmt.Fprintf(w, "%d\n", code)
 	})
 }
 
