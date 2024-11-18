@@ -1,1 +1,1 @@
-# Тестовые проекты proof-of-concept
+# Тестовые proof-of-concept проекты 
