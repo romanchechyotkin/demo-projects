@@ -40,6 +40,7 @@ func (s *server) SearchOrders(searchQuery *wrapperspb.StringValue, stream pb.Ord
 			log.Println(item)
 
 			if strings.Contains(item, searchQuery.Value) {
+				time.Sleep(3 * time.Second)
 				err := stream.Send(order)
 				if err != nil {
 					return fmt.Errorf("error sending message to stream : %v", err)
