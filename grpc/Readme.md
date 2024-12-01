@@ -6,6 +6,15 @@ cd server
 go run main.go
 ```
 
+## grpc overview
+```proto
+service OrderManagement {
+  rpc GetOrder(google.protobuf.StringValue) returns (Order); // клиентский унарный вызов, запрос ответ
+  rpc SearchOrders(google.protobuf.StringValue) returns (stream Order); // серверный стриминг, запрос от клиента вызывает стриминг от сервера
+  rpc UpdateOrders(stream Order) returns (google.protobuf.StringValue); // клиентский стриминг, запрос от клиента в виде стриминга, сервер отрабатывает пока не закончится
+}
+```
+
 ## postman testing
 для начала импортировать proto файл для доступа к методамммм
 
