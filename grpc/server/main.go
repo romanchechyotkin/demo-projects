@@ -11,19 +11,20 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/types/known/wrapperspb"
+	"google.golang.org/protobuf/types/known/emptypb"
 
-	pb "server/ecommerce"
+	pb "server/service"
 )
 
 const PORT = ":5000"
 const NETWORK = "tcp"
 
 type server struct {
-	orderMap map[string]*pb.Order
+	orderMap map[string]*pb.OrderMessage
+	pb.UnimplementedOrderManagementServer
 }
 
-func (s *server) GetOrder(ctx context.Context, in *wrapperspb.StringValue) (*pb.Order, error) {
+func (s *server) GetOrder(ctx context.Context, in *pb.ValueMessage) (*pb.OrderMessage, error) {
 	order, exists := s.orderMap[in.Value]
 	if exists {
 		return order, nil
@@ -31,7 +32,7 @@ func (s *server) GetOrder(ctx context.Context, in *wrapperspb.StringValue) (*pb.
 	return nil, errors.New("no such order")
 }
 
-func (s *server) SearchOrders(searchQuery *wrapperspb.StringValue, stream pb.OrderManagement_SearchOrdersServer) error {
+func (s *server) SearchOrders(searchQuery *pb.ValueMessage, stream pb.OrderManagement_SearchOrdersServer) error {
 	log.Println("searching for", searchQuery.Value)
 	for k, order := range s.orderMap {
 		log.Println(k, order)
@@ -52,101 +53,101 @@ func (s *server) SearchOrders(searchQuery *wrapperspb.StringValue, stream pb.Ord
 	return nil
 }
 
-func (s *server) UpdateOrders(stream pb.OrderManagement_UpdateOrdersServer) error {
+func (s *server) UpdateOrders(stream grpc.ClientStreamingServer[pb.OrderMessage, emptypb.Empty]) error {
 	ordersStr := "Updated Order IDs : "
 
 	for {
-		order, err := stream.Recv()
+		var order pb.OrderMessage
+		err := stream.RecvMsg(&order)
 		if err == io.EOF {
-			return stream.SendAndClose(&wrapperspb.StringValue{Value: "orders processed. " + ordersStr})
+			return stream.SendMsg(&emptypb.Empty{})
 		}
-		s.orderMap[order.Id] = order
+		s.orderMap[fmt.Sprint("%d", order.Id)] = &order
 		log.Println("Order ID", order.Id, "Updated")
-		ordersStr += order.Id + ", "
+		ordersStr += fmt.Sprintf("%d, ", order.Id)
 	}
-
 }
 
-func (s *server) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer) error {
-	const orderBatchSize = 3
-	combinedShipmentMap := make(map[string]pb.CombinedShipment)
-
-	for {
-		orderId, err := stream.Recv()
-		fmt.Println(orderId)
-		if err == io.EOF {
-			for _, comb := range combinedShipmentMap {
-				stream.Send(&comb)
-			}
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-
-		order, err := s.GetOrder(context.Background(), orderId)
-		log.Println("got", order)
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-
-		val, ok := combinedShipmentMap[order.Destination]
-		log.Println(val)
-		if !ok {
-			log.Println("created ")
-			combinedShipmentMap[order.Destination] = pb.CombinedShipment{}
-		}
-
-		val.OrdersList = append(val.OrdersList, order)
-		log.Println("added", val.OrdersList, len(val.OrdersList), cap(val.OrdersList))
-
-		if len(val.OrdersList) == orderBatchSize {
-			// передаем клиенту поток заказов, объединенных в партии
-			for _, comb := range combinedShipmentMap {
-				log.Println(comb)
-				// передаем клиенту партию объединенных заказов
-				stream.Send(&comb)
-			}
-		}
-
-	}
-
-}
+// func (s *server) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer) error {
+// 	const orderBatchSize = 3
+// 	combinedShipmentMap := make(map[string]pb.CombinedShipment)
+//
+// 	for {
+// 		orderId, err := stream.Recv()
+// 		fmt.Println(orderId)
+// 		if err == io.EOF {
+// 			for _, comb := range combinedShipmentMap {
+// 				stream.Send(&comb)
+// 			}
+// 			return nil
+// 		}
+// 		if err != nil {
+// 			return err
+// 		}
+//
+// 		order, err := s.GetOrder(context.Background(), orderId)
+// 		log.Println("got", order)
+// 		if err != nil {
+// 			log.Println(err)
+// 			return err
+// 		}
+//
+// 		val, ok := combinedShipmentMap[order.Destination]
+// 		log.Println(val)
+// 		if !ok {
+// 			log.Println("created ")
+// 			combinedShipmentMap[order.Destination] = pb.CombinedShipment{}
+// 		}
+//
+// 		val.OrdersList = append(val.OrdersList, order)
+// 		log.Println("added", val.OrdersList, len(val.OrdersList), cap(val.OrdersList))
+//
+// 		if len(val.OrdersList) == orderBatchSize {
+// 			// передаем клиенту поток заказов, объединенных в партии
+// 			for _, comb := range combinedShipmentMap {
+// 				log.Println(comb)
+// 				// передаем клиенту партию объединенных заказов
+// 				stream.Send(&comb)
+// 			}
+// 		}
+//
+// 	}
+//
+// }
 
 func main() {
 	var srv = &server{
-		orderMap: map[string]*pb.Order{
+		orderMap: map[string]*pb.OrderMessage{
 			"1": {
-				Id:          "1",
+				Id:          1,
 				Items:       []string{"Apple", "Orange"},
 				Description: "qwerty",
 				Price:       1230,
 				Destination: "Minsk",
 			},
 			"2": {
-				Id:          "2",
+				Id:          2,
 				Items:       []string{"Apple"},
 				Description: "qwerty",
 				Price:       99901.1,
 				Destination: "Minsk",
 			},
 			"3": {
-				Id:          "3",
+				Id:          3,
 				Items:       nil,
 				Description: "qwerty",
 				Price:       0,
 				Destination: "Minsk",
 			},
 			"4": {
-				Id:          "4",
+				Id:          4,
 				Items:       []string{"Orange"},
 				Description: "qwerty",
 				Price:       12.321,
 				Destination: "Minsk",
 			},
 			"5": {
-				Id:          "5",
+				Id:          5,
 				Items:       []string{"Coca-cola"},
 				Description: "qwerty",
 				Price:       1234,

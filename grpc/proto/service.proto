@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/descriptor.proto";
+// import "google/protobuf/wrappers.proto";
+
+package service;
+option go_package="service/";
+
+// extend google.protobuf.ServiceOptions {
+//   string version = 1001;
+// }
+
+service OrderManagement {
+  // option (version) = "1";
+
+  rpc GetOrder(ValueMessage) returns (OrderMessage);
+  rpc UpdateOrders(stream OrderMessage) returns (google.protobuf.Empty);
+  rpc SearchOrders(ValueMessage) returns (stream OrderMessage);
+}
+
+message ValueMessage {
+  string value = 1;
+}
+
+message OrderMessage {
+  repeated string items = 1;
+  int32 id = 2;
+  string description = 3;
+  float price = 4;
+  string destination = 5;
+}
+
