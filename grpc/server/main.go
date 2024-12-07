@@ -41,6 +41,7 @@ func (s *server) SearchOrders(searchQuery *pb.ValueMessage, stream pb.OrderManag
 			log.Println(item)
 
 			if strings.Contains(item, searchQuery.Value) {
+				time.Sleep(3 * time.Second)
 				err := stream.Send(order)
 				if err != nil {
 					return fmt.Errorf("error sending message to stream : %v", err)
