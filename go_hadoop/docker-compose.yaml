@@ -1,51 +1,13 @@
 services:
 
-  namenode:
-    image: apache/hadoop:3
-    hostname: namenode
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse-server
+    ports:
+      - "8123:8123" # HTTP interface
+      - "9000:9000" # Native client
     volumes:
-      - ./Makefile:/opt/hadoop/Makefile
-    ports:
-      - 8020:8020
-      - 9870:9870
-    env_file:
-      - ./config
-    environment:
-      ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
-    command: ["hdfs", "namenode"]
+      - clickhouse_data:/var/lib/clickhouse
 
-  datanode_1:
-    image: apache/hadoop:3
-    command: [ "hdfs", "datanode" ]
-    env_file:
-      - ./config
-
-  datanode_2:
-    image: apache/hadoop:3
-    command: [ "hdfs", "datanode" ]
-    env_file:
-      - ./config
-
-  resourcemanager:
-    image: apache/hadoop:3
-    hostname: resourcemanager
-    command: [ "yarn", "resourcemanager" ]
-    ports:
-      - 8088:8088
-    env_file:
-      - ./config
-    volumes:
-      - ./test.sh:/opt/test.sh
-
-  nodemanager:
-    image: apache/hadoop:3
-    command: [ "yarn", "nodemanager" ]
-    env_file:
-      - ./config
-
-  # get access to datanodes in browser
-  firefox:
-    image: jlesage/firefox
-    hostname: firefox
-    ports:
-      - 5800:5800
+volumes:
+  clickhouse_data:
