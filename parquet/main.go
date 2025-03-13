@@ -27,9 +27,9 @@ const totalRecords = 1_000_000
 func main() {
 	start := time.Now()
 
-	// Write to Parquet
-	parquetFile := "output/data.parquet"
-	jsonFile := "output/data.json"
+	
+	parquetFile := "output/data.parquet" // parquet файл
+	jsonFile := "output/data.json"	     // json файл
 
 	var wg sync.WaitGroup
 
@@ -49,7 +49,7 @@ func main() {
 	log.Printf("Finished writing %d records to Parquet & JSON in %v\n", totalRecords, time.Since(start))
 }
 
-// Function to write Parquet file
+// функция для записи в parquet файл
 func writeParquet(filename string, num int) {
 	fw, err := local.NewLocalFileWriter(filename)
 	if err != nil {
@@ -85,7 +85,7 @@ func writeParquet(filename string, num int) {
 	log.Println("Parquet write completed")
 }
 
-// Function to write JSON file
+// функция для записи в json файл
 func writeJSON(filename string, num int) {
 	file, err := os.Create(filename)
 	if err != nil {
